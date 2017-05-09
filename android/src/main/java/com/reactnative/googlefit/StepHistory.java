@@ -25,6 +25,7 @@ import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.DataSource;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
@@ -102,6 +103,7 @@ public class StepHistory {
         //Log.i(TAG, "Range End: " + dateFormat.format(endTime));
 
         //Check how many steps were walked and recorded in the last 7 days
+        /*
         DataReadRequest readRequest = new DataReadRequest.Builder()
                 .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
                 .bucketByTime(1, TimeUnit.DAYS)
@@ -109,7 +111,22 @@ public class StepHistory {
                 .build();
 
         DataReadResult dataReadResult = Fitness.HistoryApi.readData(googleFitManager.getGoogleApiClient(), readRequest).await(1, TimeUnit.MINUTES);
+        */
 
+        DataSource ESTIMATED_STEP_DELTAS = new DataSource.Builder()
+            .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
+            .setType(DataSource.TYPE_DERIVED)
+            .setStreamName("estimated_steps")
+            .setAppPackageName("com.google.android.gms")
+            .build();
+
+        DataReadRequest readRequest = new DataReadRequest.Builder()
+            .aggregate(ESTIMATED_STEP_DELTAS, DataType.AGGREGATE_STEP_COUNT_DELTA)
+            .bucketByTime(1, TimeUnit.HOURS)
+            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+            .build();
+
+        DataReadResult dataReadResult = Fitness.HistoryApi.readData(googleFitManager.getGoogleApiClient(), readRequest).await(1, TimeUnit.MINUTES);
 
         WritableArray map = Arguments.createArray();
 
