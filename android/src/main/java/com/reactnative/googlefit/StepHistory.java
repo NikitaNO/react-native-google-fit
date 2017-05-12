@@ -106,12 +106,13 @@ public class StepHistory {
         /*
         DataReadRequest readRequest = new DataReadRequest.Builder()
                 .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
-                .bucketByTime(1, TimeUnit.DAYS)
+                .bucketByTime(1, TimeUnit.HOURS)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                 .build();
 
         DataReadResult dataReadResult = Fitness.HistoryApi.readData(googleFitManager.getGoogleApiClient(), readRequest).await(1, TimeUnit.MINUTES);
         */
+
 
         DataSource ESTIMATED_STEP_DELTAS = new DataSource.Builder()
             .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
@@ -136,7 +137,9 @@ public class StepHistory {
             for (Bucket bucket : dataReadResult.getBuckets()) {
                 List<DataSet> dataSets = bucket.getDataSets();
                 for (DataSet dataSet : dataSets) {
-                    processDataSet(dataSet, map);
+                    if (dataSet.getDataPoints().size() > 0) {
+                        processDataSet(dataSet, map);
+                    }
                 }
             }
         }
@@ -152,6 +155,7 @@ public class StepHistory {
     }
 
     private void processDataSet(DataSet dataSet, WritableArray map) {
+        Log.i(TAG, "<=== processDataSet start " + dataSet.getDataPoints().size());
         Log.i(TAG, "Data returned for Data type: " + dataSet.getDataType().getName());
         DateFormat dateFormat = DateFormat.getDateInstance();
         DateFormat timeFormat = DateFormat.getTimeInstance();
@@ -180,6 +184,7 @@ public class StepHistory {
                 map.pushMap(stepMap);
             }
         }
+        Log.i(TAG, "<=== processDataSet finish ");
     }
 
 
