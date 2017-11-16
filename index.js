@@ -164,7 +164,11 @@ class RNGoogleFit {
     }
 
     usubscribeListeners() {
-        DeviceEventEmitter.removeAllListeners();
+        // DeviceEventEmitter.removeAllListeners();
+        DeviceEventEmitter.removeListener('StepChangedEvent',(steps) => callback(steps));
+        DeviceEventEmitter.removeListener('StepHistoryChangedEvent', (steps) => callback(steps));
+        DeviceEventEmitter.removeListener('AuthorizeEvent', (authorized) => callback(authorized));
+
     }
 
     lbsAndOzToK(imperial) {
