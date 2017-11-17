@@ -9,6 +9,9 @@ const googleFit = NativeModules.RNGoogleFit;
 
 class RNGoogleFit {
     constructor() {
+]        this.AuthorizeEventSubscribtion = null;
+        this.StepChangedEventSubscribtion = null;
+        this.StepHistoryChangedEventSubscribtion = null;
     }
 
     authorizeFit() {
@@ -141,7 +144,7 @@ class RNGoogleFit {
     }
 
     observeSteps(callback) {
-        DeviceEventEmitter.addListener(
+        this.StepChangedEventSubscribtion = DeviceEventEmitter.addListener(
             'StepChangedEvent',
             (steps) => callback(steps)
         );
@@ -150,25 +153,61 @@ class RNGoogleFit {
     }
 
     observeHistory(callback) {
-        DeviceEventEmitter.addListener(
+        this.StepChangedEventSubscribtion = DeviceEventEmitter.addListener(
             'StepHistoryChangedEvent',
             (steps) => callback(steps)
         );
     }
 
+
+
     onAuthorize(callback) {
-        DeviceEventEmitter.addListener(
+        this.AuthorizeEventSubscribtion = DeviceEventEmitter.addListener(
             'AuthorizeEvent',
             (authorized) => callback(authorized)
         );
     }
 
-    usubscribeListeners() {
-        // DeviceEventEmitter.removeAllListeners();
-        DeviceEventEmitter.removeListener('StepChangedEvent',(steps) => callback(steps));
-        DeviceEventEmitter.removeListener('StepHistoryChangedEvent', (steps) => callback(steps));
-        DeviceEventEmitter.removeListener('AuthorizeEvent', (authorized) => callback(authorized));
-
+    /**
+     *
+     * @param event [StepHistoryChangedEvent|AuthorizeEvent|StepChangedEvent]
+     */
+    usubscribeListeners(event) {
+        if (typeof event !== 'undefined') {
+            switch (event) {
+                case 'AuthorizeEvent':
+                    if (this.AuthorizeEventSubscribtion) {
+                        this.AuthorizeEventSubscribtion.remove();
+                        this.AuthorizeEventSubscribtion = null;
+                    }
+                    break;
+                case 'StepHistoryChangedEvent':
+                    if (this.StepHistoryChangedEventSubscribtion) {
+                        this.StepHistoryChangedEventSubscribtion.remove();
+                        this.StepHistoryChangedEventSubscribtion = null;
+                    }
+                    break;
+                case 'StepChangedEvent':
+                    if (this.StepChangedEventSubscribtion) {
+                        this.StepChangedEventSubscribtion.remove();
+                        this.StepChangedEventSubscribtion = null;
+                    }
+                    break;
+            }
+        } else {
+            if (this.StepChangedEventSubscribtion) {
+                this.StepChangedEventSubscribtion.remove();
+                this.StepChangedEventSubscribtion = null;
+            }
+            if (this.AuthorizeEventSubscribtion) {
+                this.AuthorizeEventSubscribtion.remove();
+                this.AuthorizeEventSubscribtion = null;
+            }
+            if (this.StepHistoryChangedEventSubscribtion) {
+                this.StepHistoryChangedEventSubscribtion.remove();
+                this.StepHistoryChangedEventSubscribtion = null;
+            }
+        }
     }
 
     lbsAndOzToK(imperial) {
