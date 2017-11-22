@@ -9,7 +9,7 @@ const googleFit = NativeModules.RNGoogleFit;
 
 class RNGoogleFit {
     constructor() {
-]        this.AuthorizeEventSubscribtion = null;
+        this.AuthorizeEventSubscribtion = null;
         this.StepChangedEventSubscribtion = null;
         this.StepHistoryChangedEventSubscribtion = null;
     }
